@@ -1,0 +1,7 @@
+Restore-DbaDatabase -SqlServer 'localhost' -Path \\htk-s-sql01\backup -NoRecovery 
+
+Copy-SqlJob -Source htk-s-sql01 -Destination localhost  
+
+Copy-DbaLogin -Source htk-s-sql01 -Destination localhost -Login 
+
+Get-ChildItem \\psk-db03\Backup\PSK-DB03 -Exclude *master*, *model*, *msdb* | ForEach-Object {Restore-DbaDatabase -SqlInstance psk-db01 -Path $_.fullname -UseDestinationDefaultDirectories -NoRecovery -MaintenanceSolutionBackup }
