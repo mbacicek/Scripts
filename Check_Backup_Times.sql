@@ -1,4 +1,4 @@
-
+--https://www.mssqltips.com/sqlservertip/1601/script-to-retrieve-sql-server-database-backup-history-and-no-backups/
 SELECT 
 CONVERT(CHAR(100), SERVERPROPERTY('Servername')) AS Server, 
 msdb.dbo.backupset.database_name, 
