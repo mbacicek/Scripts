@@ -1,0 +1,12 @@
+DECLARE @command VARCHAR(1000);
+
+SELECT @command = 
+	'IF ''?'' NOT IN(''master'', ''model'', ''msdb'', ''tempdb'') 
+	BEGIN 
+	USE ?; 
+	CREATE ROLE [ddl_viewer]; 
+	GRANT VIEW DEFINITION TO [ddl_viewer]; 
+	ALTER ROLE ddl_viewer ADD MEMBER [HATTRICK\developers]
+	END';
+
+EXEC sp_MSforeachdb @command;
