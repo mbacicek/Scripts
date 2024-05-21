@@ -1,0 +1,41 @@
+/***************WITH CUMPUTED COLUMN************************************/
+CREATE TABLE [dbo].[ReportingMessage](
+	[CreationTime] [DATETIME] NOT NULL,
+	[Id] [BIGINT] IDENTITY(1,1) NOT NULL,
+	[ExternalId] [NVARCHAR](256) NOT NULL,
+	[ReportingId] [UNIQUEIDENTIFIER] NOT NULL,
+	[MessageTypeId] [TINYINT] NOT NULL,
+	[MessageJson] [NVARCHAR](MAX) NOT NULL,
+	[SendingTime] [DATETIME] NULL,
+	[MessageStatusId] [INT] NOT NULL,
+	[vOfferIdentifier]  AS (CONVERT([NVARCHAR](100),JSON_VALUE([MessageJson],'$.OfferIdentifier'))),
+	[vOfferIdentifierPeriod]  AS (CONVERT([BIGINT],JSON_VALUE([MessageJson],'$.OfferIdentifierPeriod'))),
+ CONSTRAINT [PK_ReportingMessage] PRIMARY KEY CLUSTERED 
+(
+	[CreationTime] ASC,
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ReportingMessage]  WITH CHECK ADD  CONSTRAINT [FK_ReportingMessage_MessageStatusId] FOREIGN KEY([MessageStatusId])
+REFERENCES [dbo].[ReportingMessageStatus] ([Id])
+GO
+
+ALTER TABLE [dbo].[ReportingMessage] CHECK CONSTRAINT [FK_ReportingMessage_MessageStatusId]
+GO
+
+ALTER TABLE [dbo].[ReportingMessage]  WITH CHECK ADD  CONSTRAINT [FK_ReportingMessage_MessageTypeId] FOREIGN KEY([MessageTypeId])
+REFERENCES [dbo].[ReportingMessageType] ([Id])
+GO
+
+ALTER TABLE [dbo].[ReportingMessage] CHECK CONSTRAINT [FK_ReportingMessage_MessageTypeId]
+GO
+
+/*********************IX**********************************/
+CREATE NONCLUSTERED INDEX [FIX_ReportingMessages_JSON] ON [dbo].[ReportingMessage]
+(
+	[vOfferIdentifier] ASC,
+	[vOfferIdentifierPeriod] ASC
+)
+WHERE ([MessageStatusId]=(0) AND [MessageTypeId]<(3))
