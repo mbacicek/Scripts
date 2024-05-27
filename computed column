@@ -1,4 +1,4 @@
-/***************WITH CUMPUTED COLUMN************************************/
+/***************WITH COMPUTED COLUMN************************************/
 CREATE TABLE [dbo].[ReportingMessage](
 	[CreationTime] [DATETIME] NOT NULL,
 	[Id] [BIGINT] IDENTITY(1,1) NOT NULL,
