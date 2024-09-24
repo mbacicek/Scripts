@@ -1,0 +1,23 @@
+SELECT 
+    ag.name AS AvailabilityGroupName,
+    ar.replica_server_name AS ReplicaServerName,
+    CASE 
+        WHEN ars.role_desc = 'PRIMARY' THEN 'Primary' 
+        ELSE 'Secondary' 
+    END AS ReplicaRole,
+    ars.synchronization_health_desc AS SynchronizationHealth,
+    agstates.primary_recovery_health_desc AS PrimaryRecoveryHealthStatus,
+    ars.connected_state_desc AS ConnectedState,
+    ars.operational_state_desc AS OperationalState,
+    ars.synchronization_health_desc AS ReplicaSynchronizationHealth,
+    ars.last_connect_error_description AS LastConnectionError
+FROM 
+    sys.availability_groups ag
+INNER JOIN 
+    sys.dm_hadr_availability_group_states agstates ON ag.group_id = agstates.group_id
+INNER JOIN 
+    sys.availability_replicas ar ON ag.group_id = ar.group_id
+INNER JOIN 
+    sys.dm_hadr_availability_replica_states ars ON ar.replica_id = ars.replica_id
+ORDER BY 
+    ag.name, ars.role_desc;
