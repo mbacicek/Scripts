@@ -1,0 +1,23 @@
+-- Run this on the PRIMARY replica
+SELECT @@SERVERNAME AS Replica,
+       GETUTCDATE() AS TimestampUTC,
+       local_database_name AS DatabaseName,
+       remote_machine_name AS RemoteReplica,
+       role_desc AS Role,
+       internal_state_desc AS State,
+       CONVERT(   DECIMAL(6, 2),
+                  CASE
+                      WHEN database_size_bytes > 0 THEN
+                          transferred_size_bytes * 100.0 / database_size_bytes
+                      ELSE
+                          0
+                  END
+              ) AS PercentComplete,
+       CONVERT(DECIMAL(10, 2), transfer_rate_bytes_per_second / 1048576.0) AS TransferRate_MBps,
+       CONVERT(DECIMAL(10, 2), transferred_size_bytes / 1048576.0) AS Transferred_MB,
+       CONVERT(DECIMAL(10, 2), database_size_bytes / 1048576.0) AS DatabaseSize_MB,
+       start_time_utc AS Start_UTC,
+       end_time_utc AS End_UTC,
+       estimate_time_complete_utc AS EstimatedCompletion_UTC,
+       is_compression_enabled
+FROM sys.dm_hadr_physical_seeding_stats;
